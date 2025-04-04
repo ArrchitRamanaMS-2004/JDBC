@@ -2,13 +2,13 @@ import java.sql.*;
 
 public class JDBCDemo {
     public static void main(String[] args) throws Exception{
-        update();
+        commitdemo();
     }
     //simple read from db and display results
     public static void readRecords() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
         String query = "select * from employee";
 
 
@@ -28,7 +28,7 @@ public class JDBCDemo {
     public static void insertRecord() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
         String query = "insert into employee values (4,'priya',250000)";
 
 
@@ -43,7 +43,7 @@ public class JDBCDemo {
     public static void insertVar() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
 
         int id = 5;
         String name = "varun";
@@ -62,7 +62,7 @@ public class JDBCDemo {
     public static void insertUsingPst() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
 
         int id = 6;
         String name = "Nila";
@@ -87,7 +87,7 @@ public class JDBCDemo {
     public static void delete() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
 
         int id = 5;
 
@@ -104,7 +104,7 @@ public class JDBCDemo {
     public static void update() throws Exception{
         String url = "jdbc:mysql://localhost:3306/jdbcdemo";
         String userName = "root";
-        String passWord = "Arrchit@2004";
+        String passWord = "Database@01";
 
         int id = 1;
         int salary = 150000;
@@ -118,5 +118,98 @@ public class JDBCDemo {
 
         con.close();
     }
-    
+//    Types of statements:
+//    1) normal statement
+//    2) prepared statement
+//    3) callable statement ( mainly used for stored procedure )
+    //calling a simple stored procedure
+    public static void sp () throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/jdbcdemo";
+        String username = "root";
+        String password = "Database@01";
+
+        Connection con = DriverManager.getConnection(url,"root","Arrchit@2004");
+        CallableStatement cst = con.prepareCall("{call GetEmp()}");
+        ResultSet rs = cst.executeQuery();
+
+        while (rs.next()) {
+            System.out.println("id is : " + rs.getInt(1));
+            System.out.println("name is : " + rs.getString(2));
+            System.out.println("salary is : " + rs.getInt(3));
+        }
+
+        con.close();
+
+    }
+    //calling stored procedure with input parameter
+    public static void sp2 () throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/jdbcdemo";
+        String username = "root";
+        String password = "Database@01";
+
+        int id = 3;
+
+        Connection con = DriverManager.getConnection(url,username,password);
+        CallableStatement cst = con.prepareCall("{call GetEmpById(?)}");
+        cst.setInt(1, id);
+        ResultSet rs = cst.executeQuery();
+
+        while (rs.next()) {
+            System.out.println("id is : " + rs.getInt(1));
+            System.out.println("name is : " + rs.getString(2));
+            System.out.println("salary is : " + rs.getInt(3));
+        }
+
+        con.close();
+
+    }
+    //calling store procedure with in and out parameter
+    public static void sp3 () throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/jdbcdemo";
+        String username = "root";
+        String password = "Database@01";
+
+        int id = 3;
+
+        Connection con = DriverManager.getConnection(url,"root","Arrchit@2004");
+        CallableStatement cst = con.prepareCall("{call GetNameById(?,?)}");
+        cst.setInt(1, id);
+        cst.registerOutParameter(2, Types.VARCHAR);
+        cst.executeUpdate();
+
+        System.out.println(cst.getString(2));
+
+        con.close();
+
+    }
+    //commit vs autocommit
+    public static void commitdemo() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/jdbcdemo";
+        String username = "root";
+        String password = "Database@01";
+
+        String query1 = "update employee set salary = 550000 where emp_id = 1";
+        String query2 = "update employee set salary = 550000 where emp_id = 2";
+
+        Connection con = DriverManager.getConnection(url,username,password);
+        con.setAutoCommit(false);
+
+        Statement st = con.createStatement();
+        int rows1 = st.executeUpdate(query1);
+        System.out.println("Rows affected for query1 : " + rows1);
+
+        int rows2 = st.executeUpdate(query2);
+        System.out.println("Rows affected for query 2: " + rows2);
+
+        if (rows1 > 0 && rows2 > 0) {
+            con.commit();
+        }
+        con.close();
+
+    }
+
 }
