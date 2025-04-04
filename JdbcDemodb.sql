@@ -42,3 +42,5 @@ end$$
 delimiter ;
 
 call GetNameById();
+
+select * from employee;

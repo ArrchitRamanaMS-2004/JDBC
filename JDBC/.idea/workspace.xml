@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="227a7c99-6216-408b-b776-e41df3a87d43" name="Changes" comment="Initial Commit">
-      <change beforePath="$PROJECT_DIR$/../JdbcDemodb.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../JdbcDemodb.sql" afterDir="false" />
-    </list>
+    <list default="true" id="227a7c99-6216-408b-b776-e41df3a87d43" name="Changes" comment="Initial Commit" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

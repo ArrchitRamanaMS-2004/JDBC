@@ -2,7 +2,7 @@ import java.sql.*;
 
 public class JDBCDemo {
     public static void main(String[] args) throws Exception{
-        commitdemo();
+        batchdemo();
     }
     //simple read from db and display results
     public static void readRecords() throws Exception{
@@ -208,6 +208,42 @@ public class JDBCDemo {
         if (rows1 > 0 && rows2 > 0) {
             con.commit();
         }
+        con.close();
+
+    }
+    //batch processing
+    public static void batchdemo() throws Exception {
+
+        String url = "jdbc:mysql://localhost:3306/jdbcdemo";
+        String username = "root";
+        String password = "Database@01";
+
+        String query1 = "update employee set salary = 300000 where emp_id = 1";
+        String query2 = "update employee set salary = 300000 where emp_id = 2";
+        String query3 = "update employee set salary = 300000 where emp_id = 3";
+        String query4 = "update employee set salary = 300000 where emp_id = 4";
+
+        Connection con = DriverManager.getConnection(url,username,password);
+        con.setAutoCommit(false);
+        Statement st = con.createStatement();
+        st.addBatch(query1);
+        st.addBatch(query2);
+        st.addBatch(query3);
+        st.addBatch(query4);
+
+        int [] res = st.executeBatch();
+
+        for ( int i : res ) {
+            if ( i > 0 ) {
+                System.out.println("rows affected : " + i);
+                continue;
+            }
+            else {
+                con.rollback();
+            }
+        }
+
+        con.commit();
         con.close();
 
     }
