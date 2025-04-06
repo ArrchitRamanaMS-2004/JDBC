@@ -1,8 +1,11 @@
 package BusResv;
 
+import java.sql.SQLException;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Scanner;
+
 
 public class Booking {
     private String passengerName;
@@ -19,7 +22,8 @@ public class Booking {
         String dateInput = sc.nextLine();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         try {
-            this.date = dateFormat.parse(dateInput);
+            java.util.Date utildate = dateFormat.parse(dateInput);
+            this.date = new Date(utildate.getTime());
         } catch (ParseException e) {
             throw new RuntimeException("Invalid date format",e);
         }
@@ -30,20 +34,16 @@ public class Booking {
     public void setPassengerName(String passengerName){ this.passengerName = passengerName; }
     public void setDate(Date date) { this.date = date; }
 
-    public boolean isAvailable(ArrayList<Bus> buses,ArrayList<Booking> bookings){
-        int checkCapacity = 0;
-        for ( Bus bus : buses ) {
-            if ( this.busNo == bus.getBusNo() ) {
-                checkCapacity = bus.getCapacity();
-            }
-        }
+    public boolean isAvailable() throws SQLException {
+
+        BusDAO busdao = new BusDAO();
+        BookingDAO bookingdao = new BookingDAO();
+
+        int checkCapacity = busdao.getCapacity(this.busNo);
+
         //checking no of bookings already happened in the bus ( which we want to include our booking ) and in the date ( in which we want to include our booking )
-        int booked = 0;
-        for (Booking bookedTickets : bookings){
-            if (bookedTickets.getBusNo() == this.busNo && bookedTickets.getDate().equals(this.date)){
-                booked++;
-            }
-        }
-        return booked < checkCapacity ? true : false;
+        int booked = bookingdao.getBookedCount(this.busNo,this.date);
+
+        return booked < checkCapacity;
     }
 }
